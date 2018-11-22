@@ -6,7 +6,7 @@
 
 ``` bash
 # install dependencies
-make install
+make
 ```
 
 ```bash
