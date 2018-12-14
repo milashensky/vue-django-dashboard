@@ -10,7 +10,7 @@
                         <p class="red-text text-darken-1" v-if="errors && errors.name" v-for="error in errors.name">{{ error }}</p>
                     </div>
                     <div class="input-field col s12 m6">
-                        <input type="text" id="item_name" :class="(errors && errors.item_name? 'invalid': 'valid')" v-model="item.itemName"/>
+                        <input type="text" id="item_name" :class="(errors && errors.item_name? 'invalid': 'valid')" v-model="item.item_name"/>
                         <label htmlFor="item_name">Item Name</label>
                         <p class="red-text text-darken-1" v-if="errors && errors.item_name" v-for="error in errors.item_name">{{ error }}</p>
                     </div>
@@ -44,7 +44,6 @@ export default {
     methods: {
         updateItem: function () {
             let item = JSON.parse(JSON.stringify(this.item));
-            item.item_name = item.itemName;
             this.$resource('/api/item{/id}/').update({id: this.id}, item).then(resp => {
                 if (resp.body.errors) {
                     this.errors = resp.body.errors

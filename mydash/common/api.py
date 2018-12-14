@@ -1,21 +1,51 @@
 from django.views.generic import View
 from django.shortcuts import get_object_or_404
 
+from rest_framework.decorators import api_view
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.response import Response
+
+from common.serializers import ItemSerializer
+
 from common.mixins import ApiMixin, LoginRequiredMixin
 from common.models import Item
 from common.forms import ItemForm
 
 
-class ItemsView(ApiMixin, LoginRequiredMixin, View):
+@api_view(['GET'])
+def api_root(request, format=None):
+    """
+    The entry endpoint of our API.
+    """
+    return Response({
+        'users': reverse('user-list', request=request),
+        'groups': reverse('group-list', request=request),
+    })
 
-    def get(self, request, *args, **kwargs):
-        return Item.objects.all()
+
+class ItemDetail(RetrieveUpdateDestroyAPIView):
+    model = Item
+    serializer_class = ItemSerializer
+
+
+    def get_queryset(self, *args, **kwargs):
+        return Item.objects.filter(pk=self.kwargs.get('pk'), owner=self.request.user)
+
+
+class ItemsList(ListCreateAPIView):
+    model = Item
+    serializer_class = ItemSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        return Item.objects.filter(owner=self.request.user)
 
     def post(self, request, *args, **kwargs):
+        self.data = request.data
+        self.data['owner'] = request.user.pk
         form = ItemForm(self.data)
         if form.is_valid():
             item = form.save()
-            return {
+            return Response({
                 "status": True,
                 "item": {
                     "id": item.pk,
@@ -23,38 +53,5 @@ class ItemsView(ApiMixin, LoginRequiredMixin, View):
                     "price": item.price,
                     "name": item.name
                 }
-            }
-        return {"state": False, "errors": form.errors}
-
-
-class ItemView(ApiMixin, LoginRequiredMixin, View):
-
-    def get(self, request, id, *args, **kwargs):
-        item = get_object_or_404(Item, pk=id)
-        return {
-            "id": item.pk,
-            "name": item.name,
-            "itemName": item.item_name,
-            "price": item.price
-        }
-
-    def delete(self, request, id, *args, **kwargs):
-        item = get_object_or_404(Item, pk=id)
-        item.delete()
-        return {"status": True}
-
-    def put(self, request, id, *args, **kwargs):
-        item = get_object_or_404(Item, pk=id)
-        form = ItemForm(self.data, instance=item)
-        if form.is_valid():
-            item = form.save()
-            return {
-                "status": True,
-                "item": {
-                    "id": item.pk,
-                    "itemName": item.item_name,
-                    "price": item.price,
-                    "name": item.name
-                }
-            }
-        return {"state": False, "errors": form.errors}
+            })
+        return Response({"state": False, "errors": form.errors})

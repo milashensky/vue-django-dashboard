@@ -35,10 +35,10 @@ export default {
             this.$resource('/api/items').get().then(resp => {
                 vm.items = resp.body.map(x => {
                     return {
-                        name: x.fields.name,
-                        price: x.fields.price,
-                        itemName: x.fields.item_name,
-                        id: x.pk
+                        name: x.name,
+                        price: x.price,
+                        itemName: x.item_name,
+                        id: x.id
                     }
                 });
             })

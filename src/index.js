@@ -9,13 +9,20 @@ const router = new VueRouter({
 });
 
 
-Vue.use(VueRouter)
+function getCookie(name){
+    let re = new RegExp(name + "=([^;]+)"),
+        value = re.exec(document.cookie);
+    return (value != null) ? unescape(value[1]) : null;
+ }
+
+Vue.use(VueRouter);
 Vue.use(VueResource);
+Vue.http.options.headers = {'X-CSRFToken': getCookie('csrftoken')}
 
 new Vue({
     el: "#app",
     render: h => h(App),
     router,
     data: {
-    }
+    },
 });

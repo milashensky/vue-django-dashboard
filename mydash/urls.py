@@ -11,6 +11,7 @@ urlpatterns = [
     path('login', LoginView.as_view(), name="login"),
     path('logout', LogoutView.as_view(), name='logout'),
     path('', include(('common.urls', 'common'), namespace='common')),
+    re_path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
 urlpatterns += staticfiles_urlpatterns()

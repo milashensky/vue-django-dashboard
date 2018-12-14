@@ -1,5 +1,5 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
 
 module.exports = {
     entry: './src/index.js',
@@ -22,11 +22,10 @@ module.exports = {
                     loaders: {}
                     // other vue-loader options go here
                 }
-            },
-            {
+            }, {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                exclude: /node_modules/
+                include: [path.resolve('src'), path.resolve('node_modules/vue-echarts-v3/src')]
             },
             {
                 test: /\.(png|jpg|gif|svg)$/,
@@ -35,7 +34,7 @@ module.exports = {
                     name: '[name].[ext]?[hash]'
                 }
             }
-        ]
+        ],
     },
     resolve: {
         alias: {
